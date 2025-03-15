@@ -7,7 +7,7 @@ CCLIVE is a Chrome extension that enables users to live-stream Coding Community 
 - Stream the captured session to YouTube Live.
 
 ## Suggested Project structure
-/cclive
+```/cclive
 ├──/src
 │   ├──background.js  # Handles streaming logic
 │   ├──content.js     # Captures Google Meet session
@@ -17,3 +17,4 @@ CCLIVE is a Chrome extension that enables users to live-stream Coding Community 
 ├──popup.html         # UI for extension popup
 ├──manifest.json      # Chrome extension configuration
 └──README.md
+```
