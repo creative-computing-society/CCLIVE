@@ -13,19 +13,17 @@ const PORT = 3000;
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 
-const REDIRECT_URL = "http://localhost:3000/callback";
+const REDIRECT_URI = "http://localhost:3000/oauth-callback";
 
 let token = null;
 let ingestionInfo = null;
 
-// Oauth
-
 app.get("/auth", async (req, res) => {
-  const authUrl = `https://accounts.google.com/o/oauth2/auth?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URL}&response_type=code&scope=https://www.googleapis.com/auth/youtube`;
+  const authUrl = `https://accounts.google.com/o/oauth2/auth?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=https://www.googleapis.com/auth/youtube`;
   res.redirect(authUrl);
 });
 
-app.get("/callback", async (req, res) => {
+app.get("/oauth-callback", async (req, res) => {
   const { code } = req.query;
   if (!code) return res.send("no code found");
 

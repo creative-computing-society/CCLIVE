@@ -29,7 +29,7 @@ async function createLiveBroadcast(token) {
 async function createLiveStream(token) {
   const streamPayload = {
     snippet: {
-      title: "Streammmmm!",
+      title: "Stream",
     },
     cdn: {
       ingestionType: "rtmp",
