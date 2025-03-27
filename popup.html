@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CCLIVE</title>
+  <style>
+    body {
+      width: 320px;
+      padding: 15px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #333;
+    }
+    
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+    }
+    
+    .logo {
+      font-size: 20px;
+      font-weight: bold;
+      color: #4285F4;
+    }
+    
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+    }
+    
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: #ccc;
+    }
+    
+    .status-dot.online {
+      background-color: #34A853;
+    }
+    
+    .auth-section, .stream-section {
+      border: 1px solid #eee;
+      border-radius: 8px;
+      padding: 15px;
+      background-color: #f9f9f9;
+    }
+    
+    .section-title {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    
+    .auth-btn, .stream-btn {
+      background-color: #4285F4;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 15px;
+      cursor: pointer;
+      width: 100%;
+      font-weight: bold;
+    }
+    
+    .auth-btn:hover, .stream-btn:hover {
+      background-color: #3367D6;
+    }
+    
+    .auth-btn:disabled, .stream-btn:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    
+    .stream-btn.stop {
+      background-color: #EA4335;
+    }
+    
+    .stream-btn.stop:hover {
+      background-color: #D32F2F;
+    }
+    
+    .stream-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    
+    .stream-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .stream-key-input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    
+    .footer {
+      font-size: 12px;
+      color: #666;
+      text-align: center;
+      margin-top: 15px;
+    }
+    
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">CCLIVE</div>
+      <div class="status-indicator">
+        <div class="status-dot" id="status-dot"></div>
+        <span id="status-text">Disconnected</span>
+      </div>
+    </div>
+    
+    <div class="auth-section" id="auth-section">
+      <div class="section-title">Authentication</div>
+      <p>Sign in with Coding Community SSO to start streaming.</p>
+      <button class="auth-btn" id="auth-btn">Sign in with CCS</button>
+    </div>
+    
+    <div class="stream-section hidden" id="stream-section">
+      <div class="section-title">Stream to YouTube</div>
+      <button class="stream-btn" id="start-stream-btn">Start Streaming</button>
+      <button class="stream-btn stop hidden" id="stop-stream-btn">Stop Streaming</button>
+    </div>
+    
+    <div class="footer">
+      CCLIVE v1.0 | <a href="#" id="help-link">Help & Support</a>
+    </div>
+  </div>
+  
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
