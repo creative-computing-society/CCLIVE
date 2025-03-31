@@ -1,13 +1,18 @@
 import express from "express";
 import axios from "axios";
-import { setupYouTubeLive } from "./streamToYT.js";
-import { WebSocketServer } from "ws";
+import { createBandS, setupYouTubeLive } from "./streamToYT.js";
 import "dotenv/config";
 import { spawn } from "child_process";
 const open = await import("open");
 import ffmpegPath from "ffmpeg-static";
+import http from "http";
+import { Server } from "socket.io";
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: { origin: "*" },
+});
 const PORT = 3000;
 
 const CLIENT_ID = process.env.CLIENT_ID;
@@ -38,52 +43,61 @@ app.get("/oauth-callback", async (req, res) => {
 
     token = response.data.access_token;
 
-    ingestionInfo = await setupYouTubeLive(token);
+    res.send("Auth success");
   } catch (error) {
     console.error("no token found:", error.response?.data);
     res.send("auth failed");
   }
 });
 
-const wss = new WebSocketServer({ port: 3001 });
-wss.on("connection", async (ws) => {
-  console.log("connectedddd ");
+io.on("connection", async (socket) => {
+  console.log("Client connected!");
 
-  const ffmpeg = spawn(ffmpegPath, [
-    "-re",
-    "-i",
-    "pipe:0",
-    "-c:v",
-    "libx264",
-    "-preset",
-    "veryfast",
-    "-tune",
-    "zerolatency",
-    "-b:v",
-    "2500k",
-    "-maxrate",
-    "3000k",
-    "-g",
-    "60",
-    "-crf",
-    "23",
-    "-c:a",
-    "aac",
-    "-b:a",
-    "128k",
-    "-f",
-    "flv",
-    `${ingestionInfo.ingestionAddress}/${ingestionInfo.streamName}`,
-  ]);
-  ws.on("message", (data) => {
+  // get ingestion info
+
+  ingestionInfo = await createBandS(token);
+  console.log(ingestionInfo.streamName);
+  console.log(ingestionInfo.ingestionAddress);
+
+  // FFmpeg setup
+
+  // const ffmpeg = spawn(ffmpegPath, [
+  //   "-f",
+  //   "webm",
+  //   "-i",
+  //   "-",
+  //   "-c:v",
+  //   "libx264",
+  //   "-preset",
+  //   "veryfast",
+  //   "-b:v",
+  //   "2500k",
+  //   "-maxrate",
+  //   "3000k",
+  //   "-g",
+  //   "60",
+  //   "-c:a",
+  //   "aac",
+  //   "-b:a",
+  //   "128k",
+  //   "-f",
+  //   "flv",
+  //   `${ingestionInfo.ingestionAddress}/${ingestionInfo.streamName}`,
+  // ]);
+
+  socket.on("stream", (data) => {
     ffmpeg.stdin.write(data);
   });
 
-  ws.on("close", () => {
+  socket.on("disconnect", () => {
+    console.log("Client disconnected!");
     ffmpeg.kill("SIGINT");
   });
+  // complete transition to live
+  await setupYouTubeLive(token);
 });
 
-app.listen(PORT, async () => {
-  // await open.default(`http://localhost:${PORT}/auth`);
+server.listen(3000, async () => {
+  console.log("Server listening on http://localhost:3000");
+  await open.default(`http://localhost:${PORT}/auth`);
 });
